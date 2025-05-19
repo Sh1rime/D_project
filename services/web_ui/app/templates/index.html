@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF → OCR анализ</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Анализ PDF-документа</h1>
+  <form id="upload" enctype="multipart/form-data">
+    <input type="file" name="pdf" accept=".pdf" required>
+    <button type="submit">Отправить</button>
+  </form>
+
+  <div id="status"></div>
+
+<script>
+document.getElementById('upload').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form = new FormData(e.target);
+  document.getElementById('status').innerText = 'Загружается…';
+
+  const resp = await fetch('/analyze', {method:'POST', body: form});
+  if (!resp.ok) {
+    const js = await resp.json();
+    document.getElementById('status').innerText = 'Ошибка: ' + js.detail;
+    return;
+  }
+  // Получаем blob и предлагаем сохранить
+  const blob = await resp.blob();
+  const url  = window.URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = resp.headers.get('content-disposition').split("filename=")[1];
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.getElementById('status').innerText = 'Готово!';
+});
+</script>
+</body>
+</html>

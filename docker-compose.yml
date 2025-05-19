@@ -1,0 +1,22 @@
+version: '3.9'
+
+services:
+  pdf_converter:
+    build: ./services/pdf_converter
+    container_name: pdf_converter
+    ports: [ "9000:9000" ]
+
+  ocr_service:
+    build: ./services/ocr_service
+    container_name: ocr_service
+    ports: [ "9100:9100" ]
+    environment:
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata  # для rus+eng
+
+  web_ui:
+    build: ./services/web_ui
+    container_name: web_ui
+    ports: [ "8080:8080" ]
+    depends_on:
+      - pdf_converter
+      - ocr_service
