@@ -9,8 +9,10 @@ RUN apt-get update -o Acquire::Retries=3 --fix-missing && \
 
 # 2. Python
 RUN pip install --no-cache-dir \
+        "numpy<2" \
         fastapi==0.111.0 uvicorn[standard]==0.29.0 \
-        pytesseract==0.3.10 pillow==10.3.0 opencv-python-headless==4.10.0.82
+        pytesseract==0.3.10 pillow==10.3.0 \
+        opencv-python-headless==4.8.0.76
 
 WORKDIR /app
 COPY app/main.py .
